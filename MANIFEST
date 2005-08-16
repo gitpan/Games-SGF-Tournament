@@ -1,0 +1,8 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+LICENSE
+t/Games-SGF-Tournament.t
+lib/Games/SGF/Tournament.pm
+META.yml                                 Module meta-data (added by MakeMaker)
