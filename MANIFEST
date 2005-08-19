@@ -1,8 +1,11 @@
+Build.PL
 Changes
-Makefile.PL
 MANIFEST
+META.yml
+Makefile.PL
 README
-LICENSE
-t/Games-SGF-Tournament.t
+COPYING
 lib/Games/SGF/Tournament.pm
-META.yml                                 Module meta-data (added by MakeMaker)
+t/00.load.t
+t/pod-coverage.t
+t/pod.t

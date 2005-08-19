@@ -1,13 +1,11 @@
 package Games::SGF::Tournament;
 
-use 5.008004;
-use strict;
-use warnings;
-use CGI qw/ :html /;
-use Carp qw/ carp /;
+use version; $VERSION = qv('0.01_03');
 
-our $VERSION = '0.01_02';
-$VERSION = eval $VERSION;
+use warnings;
+use strict;
+use Carp;
+use CGI qw/ :html /;
 
 sub new {
    my $class = shift;
@@ -103,14 +101,20 @@ __END__
 
 =head1 NAME
 
-Games::SGF::Tournament - Tournament statistics generator class
+B<Games::SGF::Tournament> - Tournament statistics generator
+
+
+=head1 VERSION
+
+This document describes B<Games::SGF::Tournament> version 0.01_03
+
 
 =head1 SYNOPSIS
 
-   use CGI qw / :html /;
-   use Games::SGF::Tournament;
-   my $t = Games::SGF::Tournament->new();
-   print html(body($t->score()));
+    use CGI qw / :html /;
+    use Games::SGF::Tournament;
+    my $t = Games::SGF::Tournament->new();
+    print html(body($t->score()));
 
 =head1 DESCRIPTION
 
@@ -119,22 +123,24 @@ two player board games. This module used to collect tournament
 information from a set of SGF files and produce statistic HTML tables
 for creating WWW tournament pages.
 
-=head1 METHODS
+
+=head1 INTERFACE
+
+B<Games::SGF::Tournament> is a class with following methods:
 
 =head2 new
 
-The constructor. Optional parameters are below.
+The constructor. Optional parameters are:
 
-=over 4
+=over
 
-=item sgf_dir
+=item I<sgf_dir>
 
-Path to SGF files representing the tournament (current directory by
-default).
+Path to SGF files representing the tournament. Default: current directory.
 
-=item base_url
+=item I<base_url>
 
-Base URL to prefix file names of SGF files (empty string by default).
+Base URL to prefix file names of SGF files. Default: empty string.
 
 =back
 
@@ -147,10 +153,36 @@ to SGF files.
 
 Returns a table of players descending by score.
 
-=head1 BUGS
 
-This is my very first object-oriented Perl module, and i will 
-appreciate any suggestions about OO-style.
+=head1 DIAGNOSTICS
+
+=over
+
+=item C<While opening directory...>
+
+Can't open given I<sgf_dir> for reading. Probably it doesn't exist or have inappropriate permissions, see OS error message.
+
+=back
+
+
+=head1 CONFIGURATION AND ENVIRONMENT
+
+B<Games::SGF::Tournament> requires no configuration files or environment variables.
+
+
+=head1 DEPENDENCIES
+
+None.
+
+
+=head1 INCOMPATIBILITIES
+
+None reported.
+
+
+=head1 BUGS AND LIMITATIONS
+
+No bugs have been reported.
 
 Class is tested only on the game of Go. Suggestions about other games 
 are welcome, and especially about ties processing.
@@ -160,17 +192,26 @@ unpredictable. Usually, such a problem on tournaments have to be
 resolved with the help of other methods os scoring: SOS and so
 on. That is not implemented yet.
 
+This is my very first object-oriented Perl module, and i will 
+appreciate any suggestions about OO-style.
+
+Please report any bugs or feature requests through the web interface at
+L<http://sourceforge.net/tracker/?group_id=143987>.
+
+
 =head1 SEE ALSO
 
 L<CGI>, Smart Go Format: L<http://www.red-bean.com/sgf/>.
 
+
 =head1 AUTHOR
 
-Al Nikolov, E<lt>alnikolov@narod.ruE<gt>
+Al Nikolov E<lt>alnikolov@narod.ruE<gt>
 
-=head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2005 by Al Nikolov
+=head1 LICENCE AND COPYRIGHT
+
+Copyright (c) 2005, Al Nikolov E<lt>alnikolov@narod.ruE<gt>. All rights reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -186,5 +227,30 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301
 USA
+
+
+=head1 DISCLAIMER OF WARRANTY
+
+BECAUSE THIS SOFTWARE IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+FOR THE SOFTWARE, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
+OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+PROVIDE THE SOFTWARE "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER
+EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
+ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH
+YOU. SHOULD THE SOFTWARE PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
+NECESSARY SERVICING, REPAIR, OR CORRECTION.
+
+IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING
+WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY AND/OR
+REDISTRIBUTE THE SOFTWARE AS PERMITTED BY THE ABOVE LICENCE, BE
+LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL,
+OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE
+THE SOFTWARE (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
+RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
+FAILURE OF THE SOFTWARE TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
+SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGES.
+
 
 =cut

@@ -1,10 +1,15 @@
-# http://module-build.sourceforge.net/META-spec.html
-#XXXXXXX This is a prototype!!!  It will change in the future!!! XXXXX#
-name:         Games-SGF-Tournament
-version:      0.01_02
-version_from: lib/Games/SGF/Tournament.pm
-installdirs:  site
+---
+name: Games-SGF-Tournament
+version: v0.1_3
+author:
+  - Al Nikolov <alnikolov@narod.ru>
+abstract: Tournament statistics generator
+license: gpl
 requires:
-
-distribution_type: module
-generated_by: ExtUtils::MakeMaker version 6.17
+  Test::More: 0
+  version: 0
+provides:
+  Games::SGF::Tournament:
+    file: lib/Games/SGF/Tournament.pm
+    version: v0.1_3
+generated_by: Module::Build version 0.26
