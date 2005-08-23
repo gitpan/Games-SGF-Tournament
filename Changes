@@ -1,6 +1,9 @@
 Revision history for Perl extension Games::SGF::Tournament.
 
-0.01_03   Fri Aug 19 18:08:39 MSD 2005
+0.1_4     Tue Aug 23 12:23:49 MSD 2005
+          * Fix: wrong score counting
+
+0.1_3     Fri Aug 19 18:08:39 MSD 2005
           * Distribution remade with help of Module::Starter::PBP and Module::Build
           * Style corrections
           

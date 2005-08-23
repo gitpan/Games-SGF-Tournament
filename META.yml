@@ -1,6 +1,6 @@
 ---
 name: Games-SGF-Tournament
-version: v0.1_3
+version: v0.1_4
 author:
   - Al Nikolov <alnikolov@narod.ru>
 abstract: Tournament statistics generator
@@ -11,5 +11,5 @@ requires:
 provides:
   Games::SGF::Tournament:
     file: lib/Games/SGF/Tournament.pm
-    version: v0.1_3
+    version: v0.1_4
 generated_by: Module::Build version 0.26

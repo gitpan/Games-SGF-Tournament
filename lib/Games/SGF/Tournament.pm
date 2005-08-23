@@ -1,6 +1,6 @@
 package Games::SGF::Tournament;
 
-use version; $VERSION = qv('0.01_03');
+use version; $VERSION = qv('0.1_4');
 
 use warnings;
 use strict;
@@ -35,8 +35,8 @@ sub new {
       push @games, \%game_info;
 
       $game_info{RE} =~ /^([BW])\+/o;
-      foreach (qw/ PB PW /) {
-         $scores{$game_info{$_}} += $1 eq $_ ? 1:0;
+      foreach (qw/ B W /) {
+         $scores{$game_info{"P$_"}} += $1 eq $_ ? 1:0;
       }
    }
    bless { games => \@games, scores => \%scores }, $class;
@@ -106,7 +106,7 @@ B<Games::SGF::Tournament> - Tournament statistics generator
 
 =head1 VERSION
 
-This document describes B<Games::SGF::Tournament> version 0.01_03
+This document describes B<Games::SGF::Tournament> version 0.01
 
 
 =head1 SYNOPSIS
