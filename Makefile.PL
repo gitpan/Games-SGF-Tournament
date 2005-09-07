@@ -6,7 +6,7 @@ WriteMakefile(
     NAME                => 'Games::SGF::Tournament',
     AUTHOR              => 'Al Nikolov <alnikolov@narod.ru>',
     VERSION_FROM        => 'lib/Games/SGF/Tournament.pm',
-    ABSTRACT_FROM       => 'lib/Games/SGF/Tournament.pm',
+    ABSTRACT            => 'lib/Games/SGF/Tournament.pm',
     PL_FILES            => {},
     PREREQ_PM => {
         'Test::More' => 0,

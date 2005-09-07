@@ -10,3 +10,4 @@ lib/Games/SGF/Tournament.pm
 t/00.load.t
 t/pod-coverage.t
 t/pod.t
+t/functional.t

@@ -1,6 +1,6 @@
 package Games::SGF::Tournament;
 
-use version; $VERSION = qv('0.1_4');
+use version; $VERSION = qv('0.1_5');
 
 use warnings;
 use strict;
@@ -106,7 +106,7 @@ B<Games::SGF::Tournament> - Tournament statistics generator
 
 =head1 VERSION
 
-This document describes B<Games::SGF::Tournament> version 0.01
+This document describes B<Games::SGF::Tournament> version 0.1
 
 
 =head1 SYNOPSIS

@@ -1,4 +1,4 @@
-Games-SGF-Tournament version 0.01
+Games-SGF-Tournament version 0.1
 ====================================
 
 Smart Go Format (SGF) is a file format used to store game records of
@@ -15,6 +15,13 @@ To install this module, run the following commands:
     make
     make test
     make install
+    
+or:
+
+    perl Build.PL
+    ./Build
+    ./Build test
+    ./Build install
 
 
 DEPENDENCIES

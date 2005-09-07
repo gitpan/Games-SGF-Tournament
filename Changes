@@ -1,5 +1,8 @@
 Revision history for Perl extension Games::SGF::Tournament.
 
+0.1_5     Wed Sep  7 19:02:30 MSD 2005
+          * Functionality tests with help of HTML::TreeBuilder
+
 0.1_4     Tue Aug 23 12:23:49 MSD 2005
           * Fix: wrong score counting
 
