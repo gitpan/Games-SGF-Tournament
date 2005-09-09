@@ -1,4 +1,4 @@
-Games-SGF-Tournament version 0.1
+Games-SGF-Tournament version 1.0
 ====================================
 
 Smart Go Format (SGF) is a file format used to store game records of
@@ -26,7 +26,7 @@ or:
 
 DEPENDENCIES
 
-None.
+version
 
 
 COPYRIGHT AND LICENCE
