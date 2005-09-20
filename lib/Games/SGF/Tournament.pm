@@ -1,18 +1,17 @@
 package Games::SGF::Tournament;
 
-use version; $VERSION = qv(1.0);
-
+use version; $VERSION = qv('1.1_1');
 use warnings;
 use strict;
 use Carp;
 use CGI qw/ :html /;
+use Parse::RecDescent;
 
 sub new {
    my $class = shift;
    my %params = @_;
-   $params{sgf_dir} ||= '.';
-   $params{base_url} ||= '';
-   my %scores;
+   $params{sgf_dir} = '.' unless exists $params{sgf_dir};
+   $params{base_url} = '' unless exists $params{base_url};
    my @games;
    undef $/;
 
@@ -20,30 +19,43 @@ sub new {
       carp "While opening directory \"$params{sgf_dir}\": $!";
       return undef;
    }
-   foreach (grep { /.*\.sgf$/ } readdir SGF) {
+   
+   my $parser = Parse::RecDescent->new(q<
+      { my %info }
+      SGF:        GameTree { $return = \%info }
+      GameTree:   '(' Node(s) GameTree(s?) ')'
+      Node:       ';' Property(s?)
+      Property:   PropIdent PropValue(s) {
+                     $info{$item{PropIdent}} = 
+                        join ';', @{$item{'PropValue(s)'}} 
+                           if grep $item{PropIdent} eq $_, 
+                              qw/ RU SZ HA KM PW PB DT TM RE /;
+                  }
+      PropIdent:  /[[:alnum:]]+/o { 
+                     ($return = $item[1]) =~ s/[^[:upper:]\d]//go;
+                  }
+      PropValue:  '[' Character(s?) ']' { 
+                     $return = join '', @{$item{'Character(s?)'}} 
+                  }
+      Character:  /[^\\\\\]]+/so | Escaped
+      Escaped:    '\\\\' | '\]' { $return = substr $item[1], 1 }
+   >);
+   
+   foreach (grep { /.*\.sgf$/io } readdir SGF) {
       open IN, "$params{sgf_dir}/$_" or next;
-      my $sgf_content = <IN>;
-      close IN;
-      my %game_info = ( file => "$params{base_url}$_" );
-      foreach (qw/ RU SZ HA KM PW PB DT TM RE /) {
-         if ($sgf_content =~ /$_\[(.*?)\]/) {
-            $game_info{$_} = $1;
-         } else {
-            $game_info{$_} = '?';
-         }
-      }
-      push @games, \%game_info;
-
-      $game_info{RE} =~ /^([BW])\+/o;
-      foreach (qw/ B W /) {
-         $scores{$game_info{"P$_"}} += $1 eq $_ ? 1:0;
-      }
+      my $info = $parser->SGF(<IN>);
+      $info->{file} = "$params{base_url}$_";
+      push @games, $info;
    }
-   bless { games => \@games, scores => \%scores }, $class;
+     
+   bless { _games => \@games }, $class;
 }
 
 sub games {
    my $self = shift;
+   my %params = @_;
+   $params{cgi}->{border} = '1' unless exists $params{cgi}->{border};
+   $params{caption} = 'Played games' unless exists $params{caption};
    my @rows = TR(
          th('Game#'),
          th('Black'),
@@ -52,9 +64,9 @@ sub games {
          th('Date'),
          th('Result')
    );
+   
    my $i;
-
-   foreach (sort { $a->{DT} cmp $b->{DT} } @{ $self->{games} }) {
+   foreach (sort { $a->{DT} cmp $b->{DT} } @{$self->{_games}}) {
       push @rows, TR(
          td(a({ -href => $_->{file} }, ++$i)),
          td($_->{PB}),
@@ -64,39 +76,43 @@ sub games {
          td($_->{RE})
       );
    }
-
-   return table({ -border => 1 },
-      caption('Table of played games'),
-      @rows
-   );
+   
+   table($params{cgi}, caption($params{caption}), @rows);
 }
 
 sub scores {
    my $self = shift;
+   my %params = @_;
+   $params{cgi}->{border} = '1' unless exists $params{cgi}->{border};
+   $params{caption} = 'Scoreboard' unless exists $params{caption};
    my @rows = TR(
       th('Pos#'),
       th('Name'),
       th('Score')
    );
-   my $i;
+   my %scores;
 
-   foreach (sort { $self->{scores}->{$b} <=> $self->{scores}->{$a} }
-      (keys %{ $self->{scores} })
-   ) {
+   foreach my $info (@{$self->{_games}}) {
+      $info->{RE} =~ /^([BW])\+/o;
+      foreach (qw/ B W /) {
+         $scores{$info->{"P$_"}} += $1 eq $_ ? 1:0;
+      }
+   }   
+   
+   my $i;
+   foreach (sort { $scores{$b} <=> $scores{$a} } keys %scores) {
       push @rows, TR(
          td(++$i),
          td($_),
-         td($self->{scores}->{$_})
+         td($scores{$_})
       );
    }
 
-   return table({ -border => 1 },
-      caption('Scoreboard'),
-      @rows
-   );
+   table($params{cgi}, caption($params{caption}), @rows);
 }
 
 1;
+
 __END__
 
 =head1 NAME
@@ -106,7 +122,7 @@ B<Games::SGF::Tournament> - Tournament statistics generator
 
 =head1 VERSION
 
-This document describes B<Games::SGF::Tournament> version 1.0
+This document describes B<Games::SGF::Tournament> version 1.1
 
 
 =head1 SYNOPSIS
@@ -114,14 +130,14 @@ This document describes B<Games::SGF::Tournament> version 1.0
     use CGI qw / :html /;
     use Games::SGF::Tournament;
     my $t = Games::SGF::Tournament->new();
-    print html(body($t->score()));
+    print html(body($t->scores()));
 
 =head1 DESCRIPTION
 
-Smart Go Format (SGF) is a file format used to store game records of
-two player board games. This module used to collect tournament
-information from a set of SGF files and produce statistic HTML tables
-for creating WWW tournament pages.
+SGF is acronym for Smart Game File and is a file format used to store game
+records of two player board games. This module used to collect game information
+from a set of SGF files and produce HTML tables for creating WWW tournament
+pages.
 
 
 =head1 INTERFACE
@@ -136,43 +152,72 @@ The constructor. Optional parameters are:
 
 =item I<sgf_dir>
 
-Path to SGF files representing the tournament. Default: current directory.
+Path to SGF files representing the tournament. Default: C<'.'>.
 
 =item I<base_url>
 
-Base URL to prefix file names of SGF files. Default: empty string.
+Base URL to prefix file names of SGF files. Default: C<''>.
 
 =back
 
 =head2 games
 
 Returns a table of played games in chronological order with hyperlinks
-to SGF files.
+to SGF files. Optional parameters are:
+
+=over
+
+=item I<cgi>
+
+The hash reference passed directly to L<CGI> as C< <table> > attributes.
+Default: C<{ border => '1' }>.
+
+=item I<caption>
+
+The table caption. Default: C<'Played Games'>.
+
+=back
 
 =head2 scores
 
-Returns a table of players descending by score.
+Returns a table of players descending by score. Optional parameters are:
+
+=over
+
+=item I<cgi>
+
+The hash reference passed directly to L<CGI> as C< <table> > attributes.
+Default: C<{ border => '1' }>.
+
+=item I<caption>
+
+The table caption. Default: C<'Scoreboard'>.
+
+=back
 
 
 =head1 DIAGNOSTICS
 
 =over
 
-=item C<While opening directory...>
+=item C<While opening directory "dir": os-error>
 
-Can't open given I<sgf_dir> for reading. Probably it doesn't exist or have inappropriate permissions, see OS error message.
+Can't open given I<sgf_dir> for reading. Probably it doesn't exist or have
+inappropriate permissions, see OS error message.
 
 =back
 
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
-B<Games::SGF::Tournament> requires no configuration files or environment variables.
+B<Games::SGF::Tournament> requires no configuration files or environment
+variables.
 
 
 =head1 DEPENDENCIES
 
 L<version>
+L<Parser::RecDescent>
 
 
 =head1 INCOMPATIBILITIES
@@ -184,10 +229,11 @@ None reported.
 
 No bugs have been reported.
 
-Class is tested only on the game of Go. Suggestions about other games 
-are welcome, and especially about ties processing.
+The class should be compatible to FF[3] and GM[1], only the first game tree per
+file is significant (mostly because i cannot realise what actually for a
+collection of games stored in one file). Suggestions welcome.
 
-If two or more players have same score, they position will be
+If two or more players have same score, they positions will be
 unpredictable. Usually, such a problem on tournaments have to be
 resolved with the help of other methods os scoring: SOS and so
 on. That is not implemented yet.
@@ -201,7 +247,7 @@ L<http://sourceforge.net/tracker/?group_id=143987>.
 
 =head1 SEE ALSO
 
-L<CGI>, Smart Go Format: L<http://www.red-bean.com/sgf/>.
+L<CGI>, Smart Game File: L<http://www.red-bean.com/sgf/>.
 
 
 =head1 AUTHOR
@@ -211,7 +257,8 @@ Al Nikolov E<lt>alnikolov@narod.ruE<gt>
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 2005, Al Nikolov E<lt>alnikolov@narod.ruE<gt>. All rights reserved.
+Copyright (c) 2005, Al Nikolov E<lt>alnikolov@narod.ruE<gt>. All rights
+reserved.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

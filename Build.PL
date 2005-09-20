@@ -8,7 +8,8 @@ my $builder = Module::Build->new(
     dist_author         => 'Al Nikolov <alnikolov@narod.ru>',
     dist_version_from   => 'lib/Games/SGF/Tournament.pm',
     requires => {
-        'version'    => 0,
+        'version'           => 0,
+        'Parse::RecDescent' => 0
     },
     add_to_cleanup      => [ 'Games-SGF-Tournament-*' ],
 );

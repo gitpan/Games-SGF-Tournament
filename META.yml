@@ -1,14 +1,15 @@
 ---
 name: Games-SGF-Tournament
-version: v1.0.0
+version: v1.1_1
 author:
   - Al Nikolov <alnikolov@narod.ru>
 abstract: Tournament statistics generator
 license: gpl
 requires:
+  Parse::RecDescent: 0
   version: 0
 provides:
   Games::SGF::Tournament:
     file: lib/Games/SGF/Tournament.pm
-    version: v1.0.0
+    version: v1.1_1
 generated_by: Module::Build version 0.26

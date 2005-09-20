@@ -1,10 +1,10 @@
-Games-SGF-Tournament version 1.0
+Games-SGF-Tournament version 1.1
 ====================================
 
-Smart Go Format (SGF) is a file format used to store game records of
-two player board games. This module used to collect tournament
-information from a set of SGF files and produce statistic HTML tables
-for creating WWW tournament pages.
+SGF is acronym for Smart Game File and is a file format used to store game
+records of two player board games. This module used to collect game information
+from a set of SGF files and produce HTML tables for creating WWW tournament
+pages.
 
 
 INSTALLATION
@@ -27,7 +27,7 @@ or:
 DEPENDENCIES
 
 version
-
+Parse::RecDescent
 
 COPYRIGHT AND LICENCE
 

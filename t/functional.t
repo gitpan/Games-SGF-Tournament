@@ -1,11 +1,11 @@
 #!/usr/bin/perl
 
 use strict;
-use Test::More tests => 33;
+use Test::More tests => 49;
 use File::Temp qw/ tempdir /;
 use Games::SGF::Tournament;
 
-my @sgf = (<<SFG0);
+my @sgf = (<<SGF);
 (;GM[1]FF[3]
 RU[Japanese]SZ[9]HA[0]KM[5.5]
 PW[Alpha]
@@ -23,7 +23,7 @@ C[The game is over.  Final score:
 Black wins by 75.5.
 ]
 )
-SFG0
+SGF
 
 my $tempdir = tempdir( TMPDIR => 1, CLEANUP => 1 );
 my $i = 0;
@@ -41,14 +41,29 @@ can_ok($t, qw/ games scores /);
 
 SKIP: {
     eval 'use HTML::TreeBuilder';
-    skip 'HTML::TreeBuilder required for testing output', 31 if $@;
+    skip 'HTML::TreeBuilder required for testing output', 47 if $@;
     
-    my($table, $anchor, $field, $record);
+    my($table, $anchor, $field, $record, $caption);
     
     $table = HTML::TreeBuilder->new_from_content($t->games())->guts();
     is($table->tag(), 'table', 'games table @0');
+    is($table->attr('border'), '1', 'default border attribute @0');
     
-    $record = ($table->content_list())[2];
+    $caption = (grep { $_->tag() eq 'caption' } $table->content_list())[0];
+    isa_ok($caption, 'HTML::Element', 'caption @0');
+    is(($caption->content_list())[0], 'Played games', 'default caption filled @0');
+    
+    $table = HTML::TreeBuilder->new_from_content($t->games( cgi => { border => '3', width => '90%' }, caption => 'My games' ))->guts();
+    is($table->tag(), 'table', 'games table @0');
+    is($table->attr('border'), '3', 'border attribute @0');
+    is($table->attr('width'), '90%', 'width attribute @0');
+    
+    $caption = (grep { $_->tag() eq 'caption' } $table->content_list())[0];
+    isa_ok($caption, 'HTML::Element', 'caption @0');
+    is(($caption->content_list())[0], 'My games', 'caption filled @0');
+    $caption->delete();
+    
+    $record = ($table->content_list())[1];
     is($record->tag(), 'tr', 'record @0.0');
     
     $field = ($record->content_list())[0];
@@ -67,15 +82,30 @@ SKIP: {
     
     $table = HTML::TreeBuilder->new_from_content($t->scores())->guts();
     is($table->tag(), 'table', 'scores table @1');
+    is($table->attr('border'), '1', 'default border attribute @1');
     
-    $record = ($table->content_list())[2];
+    $caption = (grep { $_->tag() eq 'caption' } $table->content_list())[0];
+    isa_ok($caption, 'HTML::Element', 'caption @1');
+    is(($caption->content_list())[0], 'Scoreboard', 'default caption filled @1');
+    
+    $table = HTML::TreeBuilder->new_from_content($t->scores( cgi => { width => '90%', border => '3' }, caption => 'scores' ))->guts();
+    is($table->tag(), 'table', 'scores table @1');
+    is($table->attr('border'), '3', 'border attribute @1');
+    is($table->attr('width'), '90%', 'width attribute @1');
+    
+    $caption = (grep { $_->tag() eq 'caption' } $table->content_list())[0];
+    isa_ok($caption, 'HTML::Element', 'caption @1');
+    is(($caption->content_list())[0], 'scores', 'caption filled @1');
+    $caption->delete();
+    
+    $record = ($table->content_list())[1];
     is($record->tag(), 'tr', 'record @1.0');
     
     text_field($record, '1.0.0', '1', 'position');
     text_field($record, '1.0.1', 'Bravo', 'name');
     text_field($record, '1.0.2', '1', 'score');
     
-    $record = ($table->content_list())[3];
+    $record = ($table->content_list())[2];
     is($record->tag(), 'tr', 'record @1.1');
     
     text_field($record, '1.1.0', '2', 'position');

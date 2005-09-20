@@ -9,7 +9,8 @@ WriteMakefile(
     ABSTRACT            => 'lib/Games/SGF/Tournament.pm',
     PL_FILES            => {},
     PREREQ_PM => {
-        'version'    => 0,
+        'version'           => 0,
+        'Parse::RecDescent' => 0
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Games-SGF-Tournament-*' },

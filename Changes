@@ -1,5 +1,11 @@
 Revision history for Perl extension Games::SGF::Tournament.
 
+1.1_1     Tue Sep 20 20:32:20 MSD 2005
+          * Much better parsing with help of Parse::RecDescent
+          * Reimplemented methods
+          * Fix: SGF acronym explanation
+          * New: CGI-like table attributes and captions
+
 1.0       Fri Sep  9 18:31:28 MSD 2005
           * Little dependencies correction
           * Polishing functional tests
