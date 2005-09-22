@@ -1,5 +1,10 @@
 Revision history for Perl extension Games::SGF::Tournament.
 
+1.1_2     Thu Sep 22 15:34:59 MSD 2005
+          * Fix: game info defaults
+          * Fix: parameters defaults
+          * Fix: multiple game infos parsing
+
 1.1_1     Tue Sep 20 20:32:20 MSD 2005
           * Much better parsing with help of Parse::RecDescent
           * Reimplemented methods

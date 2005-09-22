@@ -1,6 +1,6 @@
 package Games::SGF::Tournament;
 
-use version; $VERSION = qv('1.1_1');
+use version; $VERSION = qv('1.1_2');
 use warnings;
 use strict;
 use Carp;
@@ -10,8 +10,8 @@ use Parse::RecDescent;
 sub new {
    my $class = shift;
    my %params = @_;
-   $params{sgf_dir} = '.' unless exists $params{sgf_dir};
-   $params{base_url} = '' unless exists $params{base_url};
+   $params{sgf_dir} = '.' unless defined $params{sgf_dir};
+   $params{base_url} = '' unless defined $params{base_url};
    my @games;
    undef $/;
 
@@ -43,9 +43,12 @@ sub new {
    
    foreach (grep { /.*\.sgf$/io } readdir SGF) {
       open IN, "$params{sgf_dir}/$_" or next;
-      my $info = $parser->SGF(<IN>);
-      $info->{file} = "$params{base_url}$_";
-      push @games, $info;
+      my %info = %{$parser->SGF(<IN>)};
+      foreach (qw/ RU SZ HA KM PW PB DT TM RE /) {
+         $info{$_} = '' unless defined $info{$_};
+      }
+      $info{file} = "$params{base_url}$_" ;
+      push @games, \%info;
    }
      
    bless { _games => \@games }, $class;
@@ -54,8 +57,8 @@ sub new {
 sub games {
    my $self = shift;
    my %params = @_;
-   $params{cgi}->{border} = '1' unless exists $params{cgi}->{border};
-   $params{caption} = 'Played games' unless exists $params{caption};
+   $params{cgi}->{border} = '1' unless defined $params{cgi}->{border};
+   $params{caption} = 'Played games' unless defined $params{caption};
    my @rows = TR(
          th('Game#'),
          th('Black'),
@@ -83,8 +86,8 @@ sub games {
 sub scores {
    my $self = shift;
    my %params = @_;
-   $params{cgi}->{border} = '1' unless exists $params{cgi}->{border};
-   $params{caption} = 'Scoreboard' unless exists $params{caption};
+   $params{cgi}->{border} = '1' unless defined $params{cgi}->{border};
+   $params{caption} = 'Scoreboard' unless defined $params{caption};
    my @rows = TR(
       th('Pos#'),
       th('Name'),
@@ -169,8 +172,8 @@ to SGF files. Optional parameters are:
 
 =item I<cgi>
 
-The hash reference passed directly to L<CGI> as C< <table> > attributes.
-Default: C<{ border => '1' }>.
+The hash reference passed directly to L<CGI> as C<< <table> >> attributes.
+Default: C<< { border => '1' } >>.
 
 =item I<caption>
 
@@ -186,8 +189,8 @@ Returns a table of players descending by score. Optional parameters are:
 
 =item I<cgi>
 
-The hash reference passed directly to L<CGI> as C< <table> > attributes.
-Default: C<{ border => '1' }>.
+The hash reference passed directly to L<CGI> as C<< <table> >> attributes.
+Default: C<< { border => '1' } >>.
 
 =item I<caption>
 
@@ -216,8 +219,13 @@ variables.
 
 =head1 DEPENDENCIES
 
-L<version>
-L<Parser::RecDescent>
+=over
+
+=item L<version>
+
+=item L<Parser::RecDescent>
+
+=back
 
 
 =head1 INCOMPATIBILITIES
@@ -229,9 +237,9 @@ None reported.
 
 No bugs have been reported.
 
-The class should be compatible to FF[3] and GM[1], only the first game tree per
-file is significant (mostly because i cannot realise what actually for a
-collection of games stored in one file). Suggestions welcome.
+The class should be compatible to C<FF[3]> and C<GM[1]>, only the first game
+tree per file is significant (mostly because i cannot realise what actually for
+a collection of games stored in one file). Suggestions welcome.
 
 If two or more players have same score, they positions will be
 unpredictable. Usually, such a problem on tournaments have to be
